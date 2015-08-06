@@ -1,6 +1,8 @@
 SimpleAgent
 ===========
 
+[![Build Status](https://semaphoreci.com/api/v1/projects/6c0d44e7-952a-40d4-b7f9-3b0df7ce86bc/505256/badge.svg)](https://semaphoreci.com/TheFirstAvenger/elixir-simple_agent)
+
   SimpleAgents are an abstraction around Agents.
 
   Often times, Agents are used to store a simple value, such as an atom or an integer. This is used as a flag
