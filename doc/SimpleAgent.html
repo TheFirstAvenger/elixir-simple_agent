@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>SimpleAgent</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="css/style.css" type="text/css" media="screen" charset="utf-8" />
+    <link rel="stylesheet" href="css/elixir.css" type="text/css" media="screen" charset="utf-8" />
+    <script type="text/javascript" charset="utf-8">
+      relpath = '';
+      if (relpath != '') relpath += '/';
+    </script>
+
+    <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+    <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+    <script type="text/javascript" charset="utf-8" src="js/highlight.pack.js"></script>
+    <script type="text/javascript" charset="utf-8">
+      hljs.initHighlightingOnLoad();
+      hljs.configure({languages: []}); //disable autodetect
+    </script>
+  </head>
+
+  <body>
+    <script type="text/javascript" charset="utf-8">
+      if (window.top.frames.main) document.body.className = 'frames';
+    </script>
+
+    <section id="content">
+      <div class="breadcrumbs">simple_agent v0.0.1 &rarr; <a href="overview.html">Overview</a> &rarr; <a href="SimpleAgent.html">SimpleAgent</a></div>
+      <h1>
+        SimpleAgent
+        
+      </h1>
+
+      <ul class="summary_links">
+        
+          <li><a href="#summary">Summary</a></li>
+        
+        
+          <li><a href="#types_details">Types</a></li>
+        
+        
+          <li><a href="#functions_details">Functions</a></li>
+        
+        
+        
+      </ul>
+
+      
+        <section id="moduledoc" class="docstring">
+          <p>SimpleAgents are an abstraction around Agents.</p>
+<p>Often times, Agents are used to store a simple value, such as an atom or an integer. This is used as a flag
+or a count which multiple processes can access/update. In these cases, the full Agent module is used with
+boilerplate closure code that is repetative, adds noise to the code, and can be eliminated. For example,
+to create an agent, update the value, then retrieve that code, you would run:</p>
+<pre><code class="elixir">{:ok, agent} = Agent.start_link(fn -&gt; nil end)
+Agent.update(agent, fn _ -&gt; :completed end)
+completed = Agent.get(agent, fn val -&gt; val != nil end)</code></pre>
+<p>SimpleAgent boils these calls down to a more readable:</p>
+<pre><code class="elixir">agent = SimpleAgent.start!
+SimpleAgent.update! agent, :completed
+completed = SimpleAgent.equals? agent, :completed</code></pre>
+<p>For Integer manipulation, SimpleAgent takes this code:</p>
+<pre><code class="elixir">{:ok, agent} = Agent.start_link(fn -&gt; 0 end)
+IO.puts Agent.get_and_update(fn val -&gt; {val + 1, val + 1} end)
+IO.puts Agent.get_and_update(fn val -&gt; {val - 1, val - 1} end)
+IO.puts Agent.get_and_update(fn val -&gt; {val + 1, val + 1} end)
+IO.puts Agent.get_and_update(fn val -&gt; {val + 1, val + 1} end)</code></pre>
+<p>and boils it down to the more readable:</p>
+<pre><code class="elixir">agent = SimpleAgent.start! 0
+IO.puts SimpleAgent.increment! agent
+IO.puts SimpleAgent.decrement! agent
+IO.puts SimpleAgent.increment! agent
+IO.puts SimpleAgent.increment! agent</code></pre>
+<p>SimpleAgent is very useful in testing. For example:</p>
+<pre><code class="elixir">test &quot;foo calls bar 3 times&quot; do
+  bar_call_agent = SimpleAgent.start! 0
+  :meck.new(Bar)
+  :meck.expect(Bar, :bar, fn -&gt; SimpleAgent.increment!(bar_call_agent) end)
+  Foo.foo()
+  assert SimpleAgent.get?(bar_call_agent) == 3
+end</code></pre>
+<p>Why only simple types?</p>
+<p>When a complex state such as a map or a dict is in use, the correct way to manipulate the complex state is in
+the Agent server via a closure. This prevents the entire state from being copied from the Agent Server to the
+Client (see the Agent docs for more information on this). For states with these complex types, you should use
+the full Agent module. SimpleAgent is for those cases where the “entire state” is a single simple value.</p>
+<p>Features:</p>
+<ul>
+<li>Simple types and updates reduce chances of errors, so all calls raise exceptions instead of requiring boilerplate
+  pattern matching, and start! is available instead of start_link
+</li>
+<li><p>No closures are required.</p>
+<ul>
+<li><code class="inline">get/1</code> uses &amp;(&amp;1)
+</li>
+<li>update/2 takes the value instead of a function and uses fn _ -&gt; value end
+</li>
+</ul>
+</li>
+<li><p>nil support</p>
+<ul>
+<li>start!/1 defaults the initial value to nil when not specified
+</li>
+<li>nil?/1 checks for the nil state
+</li>
+<li>clear/1 sets the nil state
+</li>
+</ul>
+</li>
+<li>increment!/1 and decrement!/1 allow for simple manipulation of integer states.
+</li>
+</ul>
+
+        </section>
+      
+
+      
+
+      
+        <h2 id="summary">Summary<span class="detail_header_links"><a class="to_top_link" href="#content" title="To the top of the page">&uarr;</a></span></h2>
+        <table class="summary">
+          <tr>
+  <td class="summary_signature"><a href="#clear/1">clear(agent)</a></td>
+  
+    <td class="summary_synopsis"><p>Resets the current state to nil</p>
+</td>
+  
+</tr>
+<tr>
+  <td class="summary_signature"><a href="#decrement!/1">decrement!(agent)</a></td>
+  
+    <td class="summary_synopsis"><p>Decreases the value of the current state by 1. Raises error if current state is not an integer</p>
+</td>
+  
+</tr>
+<tr>
+  <td class="summary_signature"><a href="#equals?/2">equals?(agent, val)</a></td>
+  
+    <td class="summary_synopsis"><p>Returns true or false if the current state of the specified agent is the specified value</p>
+</td>
+  
+</tr>
+<tr>
+  <td class="summary_signature"><a href="#get!/1">get!(agent)</a></td>
+  
+    <td class="summary_synopsis"><p>Returns the current state of the agent. If the agent has an invalid type, raises an exception</p>
+</td>
+  
+</tr>
+<tr>
+  <td class="summary_signature"><a href="#increment!/1">increment!(agent)</a></td>
+  
+    <td class="summary_synopsis"><p>Increases the value of the current state by 1. Raises error if current state is not an integer</p>
+</td>
+  
+</tr>
+<tr>
+  <td class="summary_signature"><a href="#nil?/1">nil?(agent)</a></td>
+  
+    <td class="summary_synopsis"><p>Returns true or false if the current state is nil</p>
+</td>
+  
+</tr>
+<tr>
+  <td class="summary_signature"><a href="#start!/2">start!(initial_state \\ nil, options \\ [])</a></td>
+  
+    <td class="summary_synopsis"><p>Starts an agent with the specified initial value, or nil by default. Second optional parameter is
+the standard GenServer options list</p>
+</td>
+  
+</tr>
+<tr>
+  <td class="summary_signature"><a href="#update!/2">update!(agent, val)</a></td>
+  
+    <td class="summary_synopsis"><p>Updates the state to the new value. Returns the new value</p>
+</td>
+  
+</tr>
+
+        </table>
+      
+
+      
+        <section id="types_details" class="details_list">
+          <h2>Types <a class="to_top_link" href="#content" title="To the top of the page">&uarr;</a></h2>
+          <div class="type_detail">
+  <p class="typespec" id="t:valid_types/0">
+    <a href="#t:valid_types/0">valid_types</a> :: Atom | Integer | boolean | <a href="http://elixir-lang.org/docs/stable/elixir/String.html#t:t/0">String.t</a> | nil
+  </p>
+  
+</div>
+<div class="type_detail">
+  <p class="typespec" id="t:agent/0">
+    <a href="#t:agent/0">agent</a> :: <a href="http://elixir-lang.org/docs/stable/elixir/Agent.html#t:agent/0">Agent.agent</a>
+  </p>
+  
+</div>
+
+        </section>
+      
+
+      
+        <section id="functions_details" class="details_list">
+          <h2>Functions</h2>
+          <section class="detail">
+  <div class="detail_header" id="clear/1">
+    <span class="signature"><strong>clear(agent)</strong></span>
+    <div class="detail_header_links">
+      <span class="detail_type">(function)</span>
+      <a href="#clear/1" class="detail_link" title="Link to this function">#</a>
+      <a class="to_top_link" href="#content" title="To the top of the page">&uarr;</a>
+    </div>
+  </div>
+  
+    <p>Specs:</p>
+    <ul class="spec">
+      
+        <li>clear(<a href="#t:agent/0">agent</a>) :: :ok</li>
+      
+    </ul>
+  
+  <section class="docstring">
+    <p>Resets the current state to nil</p>
+
+  </section>
+  
+</section>
+<section class="detail">
+  <div class="detail_header" id="decrement!/1">
+    <span class="signature"><strong>decrement!(agent)</strong></span>
+    <div class="detail_header_links">
+      <span class="detail_type">(function)</span>
+      <a href="#decrement!/1" class="detail_link" title="Link to this function">#</a>
+      <a class="to_top_link" href="#content" title="To the top of the page">&uarr;</a>
+    </div>
+  </div>
+  
+    <p>Specs:</p>
+    <ul class="spec">
+      
+        <li>decrement!(<a href="#t:agent/0">agent</a>) :: Integer</li>
+      
+    </ul>
+  
+  <section class="docstring">
+    <p>Decreases the value of the current state by 1. Raises error if current state is not an integer</p>
+
+  </section>
+  
+</section>
+<section class="detail">
+  <div class="detail_header" id="equals?/2">
+    <span class="signature"><strong>equals?(agent, val)</strong></span>
+    <div class="detail_header_links">
+      <span class="detail_type">(function)</span>
+      <a href="#equals?/2" class="detail_link" title="Link to this function">#</a>
+      <a class="to_top_link" href="#content" title="To the top of the page">&uarr;</a>
+    </div>
+  </div>
+  
+    <p>Specs:</p>
+    <ul class="spec">
+      
+        <li>equals?(<a href="#t:agent/0">agent</a>, <a href="#t:valid_types/0">valid_types</a>) :: boolean</li>
+      
+    </ul>
+  
+  <section class="docstring">
+    <p>Returns true or false if the current state of the specified agent is the specified value</p>
+
+  </section>
+  
+</section>
+<section class="detail">
+  <div class="detail_header" id="get!/1">
+    <span class="signature"><strong>get!(agent)</strong></span>
+    <div class="detail_header_links">
+      <span class="detail_type">(function)</span>
+      <a href="#get!/1" class="detail_link" title="Link to this function">#</a>
+      <a class="to_top_link" href="#content" title="To the top of the page">&uarr;</a>
+    </div>
+  </div>
+  
+    <p>Specs:</p>
+    <ul class="spec">
+      
+        <li>get!(<a href="#t:agent/0">agent</a>) :: <a href="#t:valid_types/0">valid_types</a></li>
+      
+    </ul>
+  
+  <section class="docstring">
+    <p>Returns the current state of the agent. If the agent has an invalid type, raises an exception</p>
+
+  </section>
+  
+</section>
+<section class="detail">
+  <div class="detail_header" id="increment!/1">
+    <span class="signature"><strong>increment!(agent)</strong></span>
+    <div class="detail_header_links">
+      <span class="detail_type">(function)</span>
+      <a href="#increment!/1" class="detail_link" title="Link to this function">#</a>
+      <a class="to_top_link" href="#content" title="To the top of the page">&uarr;</a>
+    </div>
+  </div>
+  
+    <p>Specs:</p>
+    <ul class="spec">
+      
+        <li>increment!(<a href="#t:agent/0">agent</a>) :: Integer</li>
+      
+    </ul>
+  
+  <section class="docstring">
+    <p>Increases the value of the current state by 1. Raises error if current state is not an integer</p>
+
+  </section>
+  
+</section>
+<section class="detail">
+  <div class="detail_header" id="nil?/1">
+    <span class="signature"><strong>nil?(agent)</strong></span>
+    <div class="detail_header_links">
+      <span class="detail_type">(function)</span>
+      <a href="#nil?/1" class="detail_link" title="Link to this function">#</a>
+      <a class="to_top_link" href="#content" title="To the top of the page">&uarr;</a>
+    </div>
+  </div>
+  
+    <p>Specs:</p>
+    <ul class="spec">
+      
+        <li>nil?(<a href="#t:agent/0">agent</a>) :: boolean</li>
+      
+    </ul>
+  
+  <section class="docstring">
+    <p>Returns true or false if the current state is nil</p>
+
+  </section>
+  
+</section>
+<section class="detail">
+  <div class="detail_header" id="start!/2">
+    <span class="signature"><strong>start!(initial_state \\ nil, options \\ [])</strong></span>
+    <div class="detail_header_links">
+      <span class="detail_type">(function)</span>
+      <a href="#start!/2" class="detail_link" title="Link to this function">#</a>
+      <a class="to_top_link" href="#content" title="To the top of the page">&uarr;</a>
+    </div>
+  </div>
+  
+    <p>Specs:</p>
+    <ul class="spec">
+      
+        <li>start!(<a href="#t:valid_types/0">valid_types</a>, <a href="http://elixir-lang.org/docs/stable/elixir/GenServer.html#t:options/0">GenServer.options</a>) :: pid</li>
+      
+    </ul>
+  
+  <section class="docstring">
+    <p>Starts an agent with the specified initial value, or nil by default. Second optional parameter is
+the standard GenServer options list.</p>
+<h2>Return values</h2>
+<p>Returns the pid of the server to be used in subsequent calls to other SimpleAgent functions.</p>
+
+  </section>
+  
+</section>
+<section class="detail">
+  <div class="detail_header" id="update!/2">
+    <span class="signature"><strong>update!(agent, val)</strong></span>
+    <div class="detail_header_links">
+      <span class="detail_type">(function)</span>
+      <a href="#update!/2" class="detail_link" title="Link to this function">#</a>
+      <a class="to_top_link" href="#content" title="To the top of the page">&uarr;</a>
+    </div>
+  </div>
+  
+    <p>Specs:</p>
+    <ul class="spec">
+      
+        <li>update!(<a href="#t:agent/0">agent</a>, <a href="#t:valid_types/0">valid_types</a>) :: <a href="#t:valid_types/0">valid_types</a></li>
+      
+    </ul>
+  
+  <section class="docstring">
+    <p>Updates the state to the new value. Returns the new value.</p>
+
+  </section>
+  
+</section>
+
+        </section>
+      
+
+      
+
+      
+    </section>
+  </body>
+</html>
