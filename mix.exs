@@ -3,11 +3,17 @@ defmodule SimpleAgent.Mixfile do
 
   def project do
     [app: :simple_agent,
-     version: "0.0.1",
+     version: "0.0.2",
      elixir: "~> 1.0",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
-     deps: deps]
+     deps: deps,
+     description: description,
+     package: package,
+     docs: [readme: "README.md",
+            main: "README",
+            source_url: "https://github.com/TheFirstAvenger/elixir-simple_agent.git"]
+      ]
   end
 
   # Configuration for the OTP application
@@ -29,5 +35,15 @@ defmodule SimpleAgent.Mixfile do
   defp deps do
     [{:earmark, "~> 0.1", only: :dev},
       {:ex_doc, "~> 0.7", only: :dev}]
+  end
+
+  defp description do
+    "A simplification/abstraction layer for the Agent module."
+  end
+
+  defp package do
+    [contributors: ["Mike Binns"],
+     licenses: ["MIT"],
+     links: %{"GitHub" => "https://github.com/TheFirstAvenger/elixir-simple_agent.git"}]
   end
 end

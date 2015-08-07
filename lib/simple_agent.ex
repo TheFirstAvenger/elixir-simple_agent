@@ -61,10 +61,10 @@ defmodule SimpleAgent do
   * Simple types and updates reduce chances of errors, so all calls raise exceptions instead of requiring boilerplate
     pattern matching, and `start!/2` is available instead of start_link
   * No closures are required.
-      * `get/1` uses &(&1)
-      * `update/2` takes the value instead of a function and uses fn _ -> value end
+      * `get!/1` uses &(&1)
+      * `update!/2` takes the value instead of a function and uses fn _ -> value end
   * nil support
-      * `start!/1` defaults the initial value to nil when not specified
+      * `start!/2` defaults the initial value to nil when not specified
       * `nil?/1` checks for the nil state
       * `clear/1` sets the nil state
   * `increment!/1` and `decrement!/1` allow for simple manipulation of integer states.
