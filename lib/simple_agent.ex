@@ -6,7 +6,7 @@ defmodule SimpleAgent do
   @type agent :: Agent.agent
 
   @moduledoc """
-  SimpleAgents are an abstraction around Agents.
+  SimpleAgent is a simplification/abstraction layer around the base Elixir `Agent` module.
 
   Often times, Agents are used to store a simple value, such as an atom or an integer. This is used as a flag
   or a count which multiple processes can access/update. In these cases, the full `Agent` module is used with
@@ -17,13 +17,13 @@ defmodule SimpleAgent do
       Agent.update(agent, fn _ -> :completed end)
       completed = Agent.get(agent, fn val -> val != nil end)
   
-  SimpleAgent boils these calls down to a more readable:
+  `SimpleAgent` boils these calls down to a more readable:
 
       agent = SimpleAgent.start!
       SimpleAgent.update! agent, :completed
       completed = SimpleAgent.equals? agent, :completed
 
-  For Integer manipulation, SimpleAgent takes this code:
+  For Integer manipulation, `SimpleAgent` takes this code:
 
       {:ok, agent} = Agent.start_link(fn -> 0 end)
       IO.puts Agent.get_and_update(fn val -> {val + 1, val + 1} end)
@@ -39,7 +39,7 @@ defmodule SimpleAgent do
       IO.puts SimpleAgent.increment! agent
       IO.puts SimpleAgent.increment! agent
 
-  SimpleAgent is very useful in testing. For example:
+  `SimpleAgent` is very useful in testing. For example:
 
       test "foo calls bar 3 times" do
         bar_call_agent = SimpleAgent.start! 0
@@ -54,7 +54,7 @@ defmodule SimpleAgent do
   When a complex state such as a map or a dict is in use, the correct way to manipulate the complex state is in
   the Agent server via a closure. This prevents the entire state from being copied from the Agent Server to the
   Client (see the Agent docs for more information on this). For states with these complex types, you should use
-  the full `Agent` module. SimpleAgent is for those cases where the "entire state" is a single simple value.
+  the full `Agent` module. `SimpleAgent` is for those cases where the "entire state" is a single simple value.
 
   Features:
 
@@ -77,7 +77,7 @@ defmodule SimpleAgent do
 
   ## Return values
 
-  Returns the pid of the server to be used in subsequent calls to other SimpleAgent functions.
+  Returns the pid of the server to be used in subsequent calls to other `SimpleAgent` functions.
 
   """
   @spec start!(valid_types, GenServer.options) :: pid
