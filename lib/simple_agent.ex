@@ -2,7 +2,7 @@ defmodule SimpleAgent do
 
   use GenServer
 
-  @type valid_types :: Atom | Integer | boolean | String.t | nil
+  @type valid_types :: Atom | Integer | String.t # Atom covers nil & boolean
   @type agent :: Agent.agent
 
   @moduledoc """
@@ -54,7 +54,8 @@ defmodule SimpleAgent do
   When a complex state such as a map or a dict is in use, the correct way to manipulate the complex state is in
   the Agent server via a closure. This prevents the entire state from being copied from the Agent Server to the
   Client (see the Agent docs for more information on this). For states with these complex types, you should use
-  the full `Agent` module. `SimpleAgent` is for those cases where the "entire state" is a single simple value.
+  the full `Agent` module. `SimpleAgent` is for those cases where the "entire state" is a single simple Integer,
+  String, or Atom (including nil, true, and false).
 
   Features:
 
@@ -174,9 +175,7 @@ defmodule SimpleAgent do
   end
 
   @spec is_valid_type(valid_types) :: true | false
-  defp is_valid_type(nil), do: true
-  defp is_valid_type(val) when is_atom(val), do: true
-  defp is_valid_type(val) when is_boolean(val), do: true
+  defp is_valid_type(val) when is_atom(val), do: true # covers nil, true, and false
   defp is_valid_type(val) when is_bitstring(val), do: true
   defp is_valid_type(val) when is_integer(val), do: true
   defp is_valid_type(_), do: false
