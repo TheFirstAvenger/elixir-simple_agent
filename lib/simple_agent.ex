@@ -1,6 +1,6 @@
 defmodule SimpleAgent do
 
-  @type valid_types :: Atom | Integer | String.t | nil # Atom covers nil & boolean
+  @type valid_types :: atom | integer | String.t # atom covers nil & boolean
   @type agent :: Agent.agent
 
   @moduledoc """
@@ -143,7 +143,7 @@ defmodule SimpleAgent do
   @doc """
   Increases the value of the current state by count (default 1). Raises error if current state is not an integer
   """
-  @spec increment!(agent, Integer) :: Integer
+  @spec increment!(agent, integer) :: integer
   def increment!(agent, count \\ 1) do
     modify_integer!(agent, fn a -> a + count end)
   end
@@ -151,12 +151,12 @@ defmodule SimpleAgent do
   @doc """
   Decreases the value of the current state by count (default 1). Raises error if current state is not an integer
   """
-  @spec decrement!(agent, Integer) :: Integer
+  @spec decrement!(agent, integer) :: integer
   def decrement!(agent, count \\ 1) do
     modify_integer!(agent, fn a -> a - count end)
   end
 
-  @spec modify_integer!(agent, fun) :: Integer
+  @spec modify_integer!(agent, fun) :: integer
   defp modify_integer!(agent, fun) do
     Agent.get_and_update(agent, fn val ->
                             if !is_integer(val) do
