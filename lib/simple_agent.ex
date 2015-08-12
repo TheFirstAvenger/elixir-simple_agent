@@ -1,6 +1,6 @@
 defmodule SimpleAgent do
 
-  @type valid_types :: Atom | Integer | String.t # Atom covers nil & boolean
+  @type valid_types :: Atom | Integer | String.t | nil # Atom covers nil & boolean
   @type agent :: Agent.agent
 
   @moduledoc """
