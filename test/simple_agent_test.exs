@@ -84,7 +84,7 @@ defmodule SimpleAgentTest do
     assert SimpleAgent.increment!(agent) == 1
     assert SimpleAgent.increment!(agent) == 2
     assert SimpleAgent.increment!(agent) == 3
-    assert SimpleAgent.increment!(agent) == 4
+    assert SimpleAgent.increment!(agent, 5) == 8
   end
 
   test "increment rejects invalid state" do
@@ -97,7 +97,7 @@ defmodule SimpleAgentTest do
     assert SimpleAgent.decrement!(agent) == -1
     assert SimpleAgent.decrement!(agent) == -2
     assert SimpleAgent.decrement!(agent) == -3
-    assert SimpleAgent.decrement!(agent) == -4
+    assert SimpleAgent.decrement!(agent, 5) == -8
   end
 
   test "decrement rejects invalid state" do

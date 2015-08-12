@@ -66,7 +66,7 @@ defmodule SimpleAgent do
       * `start!/2` defaults the initial value to nil when not specified
       * `nil?/1` checks for the nil state
       * `clear/1` sets the nil state
-  * `increment!/1` and `decrement!/1` allow for simple manipulation of integer states.
+  * `increment!/2` and `decrement!/2` allow for simple manipulation of integer states.
 
   """
   
@@ -141,19 +141,19 @@ defmodule SimpleAgent do
   end
 
   @doc """
-  Increases the value of the current state by 1. Raises error if current state is not an integer
+  Increases the value of the current state by count (default 1). Raises error if current state is not an integer
   """
-  @spec increment!(agent) :: Integer
-  def increment!(agent) do
-    modify_integer!(agent, fn a -> a + 1 end)
+  @spec increment!(agent, Integer) :: Integer
+  def increment!(agent, count \\ 1) do
+    modify_integer!(agent, fn a -> a + count end)
   end
 
   @doc """
-  Decreases the value of the current state by 1. Raises error if current state is not an integer
+  Decreases the value of the current state by count (default 1). Raises error if current state is not an integer
   """
-  @spec decrement!(agent) :: Integer
-  def decrement!(agent) do
-    modify_integer!(agent, fn a -> a - 1 end)
+  @spec decrement!(agent, Integer) :: Integer
+  def decrement!(agent, count \\ 1) do
+    modify_integer!(agent, fn a -> a - count end)
   end
 
   @spec modify_integer!(agent, fun) :: Integer

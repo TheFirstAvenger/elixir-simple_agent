@@ -64,4 +64,4 @@ Features:
     * `start!/2` defaults the initial value to nil when not specified
     * `nil?/1` checks for the nil state
     * `clear/1` sets the nil state
-* `increment!/1` and `decrement!/1` allow for simple manipulation of integer states.
+* `increment!/2` and `decrement!/2` allow for simple manipulation of integer states.
