@@ -9,17 +9,17 @@ defmodule SimpleAgent do
   Often times, Agents are used to store a simple value, such as an atom or an integer. This is used as a flag
   or a count which multiple processes can access/update. In these cases, the full `Agent` module is used with
   boilerplate closure code that is repetative, adds noise to the code, and can be eliminated. For example,
-  to create an agent, update the value, then retrieve that code, you would run:
+  to create an agent, update the value, then retrieve that value, you would run:
 
       {:ok, agent} = Agent.start_link(fn -> nil end)
-      Agent.update(agent, fn _ -> :completed end)
-      completed = Agent.get(agent, fn val -> val != nil end)
+      Agent.update(agent, fn _ -> :final_value end)
+      final_value = Agent.get(agent, fn val -> val end)
   
   `SimpleAgent` boils these calls down to a more readable:
 
       agent = SimpleAgent.start!
-      SimpleAgent.update! agent, :completed
-      completed = SimpleAgent.equals? agent, :completed
+      SimpleAgent.update! agent, :final_value
+      completed = SimpleAgent.get! agent
 
   For Integer manipulation, `SimpleAgent` takes this code:
 
