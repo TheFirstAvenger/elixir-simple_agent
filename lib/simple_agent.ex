@@ -1,7 +1,7 @@
 defmodule SimpleAgent do
-
-  @type valid_types :: atom | integer | String.t # atom covers nil & boolean
-  @type agent :: Agent.agent
+  # atom covers nil & boolean
+  @type valid_types :: atom | integer | String.t()
+  @type agent :: Agent.agent()
 
   @moduledoc """
   SimpleAgent is a simplification/abstraction layer around the base Elixir `Agent` module.
@@ -14,7 +14,7 @@ defmodule SimpleAgent do
       {:ok, agent} = Agent.start_link(fn -> nil end)
       Agent.update(agent, fn _ -> :final_value end)
       final_value = Agent.get(agent, fn val -> val end)
-  
+
   `SimpleAgent` boils these calls down to a more readable:
 
       agent = SimpleAgent.start!
@@ -46,7 +46,7 @@ defmodule SimpleAgent do
         Foo.foo()
         assert SimpleAgent.get?(bar_call_agent) == 3
       end
-  
+
   Why only simple types?
 
   When a complex state such as a map or a dict is in use, the correct way to manipulate the complex state is in
@@ -69,7 +69,7 @@ defmodule SimpleAgent do
   * `increment!/2` and `decrement!/2` allow for simple manipulation of integer states.
 
   """
-  
+
   @doc """
   Starts an agent with the specified initial value, or nil by default. Second optional parameter is
   the standard GenServer options list.
@@ -79,7 +79,7 @@ defmodule SimpleAgent do
   Returns the pid of the server to be used in subsequent calls to other `SimpleAgent` functions.
 
   """
-  @spec start!(valid_types, GenServer.options) :: pid
+  @spec start!(valid_types, GenServer.options()) :: pid
   def start!(initial_state \\ nil, options \\ []) do
     if is_valid_type(initial_state) do
       {:ok, agent} = Agent.start(fn -> initial_state end, options)
@@ -94,7 +94,8 @@ defmodule SimpleAgent do
   """
   @spec get!(agent) :: valid_types
   def get!(agent) do
-    val = Agent.get(agent, &(&1))
+    val = Agent.get(agent, & &1)
+
     if is_valid_type(val) do
       val
     else
@@ -120,7 +121,7 @@ defmodule SimpleAgent do
   """
   @spec nil?(agent) :: boolean
   def nil?(agent) do
-    equals? agent, nil
+    equals?(agent, nil)
   end
 
   @doc """
@@ -128,7 +129,7 @@ defmodule SimpleAgent do
   """
   @spec clear(agent) :: :ok
   def clear(agent) do
-    update! agent, nil
+    update!(agent, nil)
     :ok
   end
 
@@ -159,13 +160,13 @@ defmodule SimpleAgent do
   @spec modify_integer!(agent, fun) :: integer
   defp modify_integer!(agent, fun) do
     Agent.get_and_update(agent, fn val ->
-                            if !is_integer(val) do
-                              {:not_an_integer, val}
-                            else
-                              new_val = fun.(val)
-                              {new_val, new_val}
-                            end
-                          end)
+      if !is_integer(val) do
+        {:not_an_integer, val}
+      else
+        new_val = fun.(val)
+        {new_val, new_val}
+      end
+    end)
     |> case do
       :not_an_integer -> raise "Invalid type in modify_integer!"
       ret -> ret
@@ -173,9 +174,9 @@ defmodule SimpleAgent do
   end
 
   @spec is_valid_type(valid_types) :: true | false
-  defp is_valid_type(val) when is_atom(val), do: true # covers nil, true, and false
+  # covers nil, true, and false
+  defp is_valid_type(val) when is_atom(val), do: true
   defp is_valid_type(val) when is_bitstring(val), do: true
   defp is_valid_type(val) when is_integer(val), do: true
   defp is_valid_type(_), do: false
-
 end
