@@ -5,13 +5,13 @@ defmodule SimpleAgent.Mixfile do
     [
       app: :simple_agent,
       version: "0.0.8",
-      elixir: "~> 1.0",
+      elixir: "~> 1.14",
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       description: description(),
       package: package(),
-      docs: [readme: "README.md", main: "README", source_url: "https://github.com/TheFirstAvenger/elixir-simple_agent.git"]
+      docs: [readme: "README.md", main: "SimpleAgent", source_url: "https://github.com/TheFirstAvenger/elixir-simple_agent.git"]
     ]
   end
 
@@ -32,7 +32,7 @@ defmodule SimpleAgent.Mixfile do
   #
   # Type `mix help deps` for more examples and options
   defp deps do
-    [{:earmark, "~> 0.1", only: :dev}, {:ex_doc, "~> 0.7", only: :dev}]
+    [{:ex_doc, "~> 0.19", only: :dev, runtime: false}]
   end
 
   defp description do
